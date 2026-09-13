@@ -3,8 +3,8 @@ name: senior-mobile-developer
 description: >-
   Universal End-to-End Senior Mobile Engineering, Product & UI/UX Architecture Doctrine.
   Enforces Product Discovery & Page Rationalization, World-Class UI/UX Standards (Zero-Emoji, Zero Fake-AI, Thumb-Zone ergonomics),
-  Native Bilingual i18n (FR/EN), Zero-Overflow Responsive Engine, Domain-Driven Clean Architecture (DDD),
-  Exhaustive 4-State UI Contracts, Edge-to-Edge OS Polish, Zero-Trust Client Security, and Structured Diagnostics.
+  Native Bilingual i18n (FR/EN), Homothetic Zero-Overflow Responsive Engine (Screen Ratio Engine), Granular Button & Action Loading Isolation,
+  Domain-Driven Clean Architecture (DDD), Exhaustive 4-State UI Contracts, Edge-to-Edge OS Polish, Zero-Trust Client Security, and Structured Diagnostics.
   Apply across ANY mobile application project to build with senior-level craft and product thinking from day 0.
 ---
 
@@ -27,8 +27,8 @@ graph LR
 
 1. **Product Strategist**: Challenge the need for every screen, eliminate friction, and streamline the core value loop.
 2. **Principal UI/UX Designer**: Build cohesive design tokens, enforce thumb-friendly ergonomics, and reject amateur visuals.
-3. **Senior Software Architect**: Enforce pure domain models, reactive state, typed failures, and zero-trust security.
-4. **Production & QA Engineer**: Ensure zero overflow, OS edge-to-edge transparency, native splash, and automated testability.
+3. **Senior Software Architect**: Enforce pure domain models, reactive state, typed failures, granular loading states, and zero-trust security.
+4. **Production & QA Engineer**: Ensure zero overflow, homothetic scaling, OS edge-to-edge transparency, native splash, and automated testability.
 
 ---
 
@@ -112,12 +112,13 @@ For every screen requested or planned, ask:
 
 ---
 
-## 4. 📐 Phase 4: Universal Multi-Screen Responsiveness & Zero-Overflow Engine
+## 4. 📐 Phase 4: Homothetic Responsive Engine & Zero-Overflow Doctrine
 
 ### 🔴 Anti-Patterns
-- Using hardcoded pixel dimensions (`width: 350`, `height: 80`) that break on small phones (SE) or stretch awkwardly on tablets.
+- Using hardcoded pixel dimensions (`width: 350`, `height: 80`) that break on small phones (SE 320-375dp) or stretch awkwardly on tablets.
 - Unhandled system accessibility text zoom breaking UI buttons and header text.
 - Yellow/Black `RenderFlex overflowed by X pixels` stripes when the on-screen keyboard appears.
+- Header titles truncated with ellipsis (`...`) on compact devices due to fixed layout widths.
 
 ### 🟢 Senior Architectural Doctrine
 
@@ -137,46 +138,72 @@ For every screen requested or planned, ask:
    );
    ```
 
-2. **Proportional Ratio Extension (Based on Reference Canvas 390x844)**:
-   - Provide centralized helper extensions for proportional scaling:
+2. **Screen Ratio Engine (Homothetic Proportional Scaling)**:
+   - Provide centralized, high-precision extensions calibrated on the reference canvas (`kRefScreenWidth = 390.0` or `448.0`, `kRefScreenHeight = 844.0` or `998.0`):
    ```dart
-   extension ResponsiveContext on BuildContext {
-     double get screenWidth => MediaQuery.sizeOf(this).width;
-     double get screenHeight => MediaQuery.sizeOf(this).height;
-     
-     double rW(double size) => (size / 390.0) * screenWidth;
-     double rH(double size) => (size / 844.0) * screenHeight;
-     double rSp(double size) => (size / 390.0) * screenWidth;
+   extension ResponsiveExtensions on BuildContext {
+     Size get screenSize => MediaQuery.sizeOf(this);
+     double get screenWidth => screenSize.width;
+     double get screenHeight => screenSize.height;
+
+     bool get isMobile => screenWidth < 768;
+     bool get isTablet => screenWidth >= 768 && screenWidth < 1024;
+     bool get isDesktop => screenWidth >= 1024;
+
+     // Ratio factors with broad adaptive bounds (0.68x - 1.15x) for compact devices
+     double get widthRatio => isMobile ? (screenWidth / kRefScreenWidth).clamp(0.68, 1.15) : 1.0;
+     double get heightRatio => isMobile ? (screenHeight / kRefScreenHeight).clamp(0.68, 1.15) : 1.0;
+
+     /// Proportional width
+     double rW(double size) => (size * widthRatio).roundToDouble();
+
+     /// Proportional height
+     double rH(double size) => (size * heightRatio).roundToDouble();
+
+     /// Proportional square element (avatars, icons, action buttons, bell triggers)
+     double rSize(double size) => (size * widthRatio).roundToDouble();
+
+     /// Proportional fluid typography
+     double rSp(double fontSize) => (fontSize * widthRatio).roundToDouble();
+
+     /// Proportional padding and spacing
+     double rPad(double space) => (space * widthRatio).roundToDouble();
    }
    ```
 
-3. **Protected Universal Primitives (`AppButton`)**:
+3. **Dynamic Title & Header Protection (`FittedBox`)**:
+   - Wrap dynamic header titles, username greetings, and metrics in `FittedBox(fit: BoxFit.scaleDown)` with `maxLines: 1` to ensure zero truncated ellipses (`...`) on compact phones.
+
+4. **Protected Universal Primitives (`AppButton`)**:
    - Buttons must encapsulate loading spinners, disabled states, and text protection:
    ```dart
    class AppButton extends StatelessWidget {
      final String text;
      final VoidCallback? onPressed;
      final bool isLoading;
+     final bool isDisabled;
      
      const AppButton({
        super.key,
        required this.text,
        required this.onPressed,
        this.isLoading = false,
+       this.isDisabled = false,
      });
 
      @override
      Widget build(BuildContext context) {
+       final effectiveDisabled = isDisabled || isLoading || onPressed == null;
        return SizedBox(
-         height: 52,
+         height: context.rW(52),
          width: double.infinity,
          child: ElevatedButton(
-           onPressed: isLoading ? null : onPressed,
+           onPressed: effectiveDisabled ? null : onPressed,
            child: isLoading
-               ? const SizedBox(
-                   width: 24,
-                   height: 24,
-                   child: CircularProgressIndicator(strokeWidth: 2.5),
+               ? SizedBox(
+                   width: context.rW(22),
+                   height: context.rW(22),
+                   child: const CircularProgressIndicator(strokeWidth: 2.2),
                  )
                : FittedBox(
                    fit: BoxFit.scaleDown,
@@ -188,21 +215,21 @@ For every screen requested or planned, ask:
    }
    ```
 
-4. **Keyboard Avoidance & Scroll Hygiene**:
+5. **Keyboard Avoidance & Scroll Hygiene**:
    - Interactive forms and input screens must always be wrapped in:
    ```dart
    SingleChildScrollView(
      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
      padding: EdgeInsets.only(
-       left: 16,
-       right: 16,
-       bottom: MediaQuery.viewInsetsOf(context).bottom + 24,
+       left: context.rPad(16),
+       right: context.rPad(16),
+       bottom: MediaQuery.viewInsetsOf(context).bottom + context.rPad(24),
      ),
      child: ...
    )
    ```
 
-5. **Large Screen & Tablet Constraints**:
+6. **Large Screen & Tablet Constraints**:
    - Cap maximum content width to `600dp` centered on tablet viewports:
    ```dart
    Center(
@@ -215,7 +242,56 @@ For every screen requested or planned, ask:
 
 ---
 
-## 5. 🏛️ Phase 5: Domain-Driven Clean Architecture & Inversion of Control
+## 5. 🔘 Phase 5: Granular Button & Action Loading Isolation
+
+### 🔴 Anti-Patterns (Amateur / "Violent" UI Loading)
+- ❌ **Monolithic `isLoading` Flag**: Using a single global boolean `isLoading` on a screen containing multiple action buttons (e.g. "Continue with Google", "Continue with Apple", "Sign In with Email", or "Save Draft" vs "Publish").
+- ❌ **Mass Button Spinning**: When the user taps one button, *every* button on the screen abruptly turns into a spinner simultaneously. This looks chaotic, amateurish, and confuses the user about which process is running.
+
+### 🟢 Senior Architectural Doctrine
+
+1. **Scoped Action Identifiers / Enums**:
+   - Model asynchronous actions as typed enums or distinct identifiers:
+   ```dart
+   enum AuthAction { none, google, apple, emailPassword }
+
+   class AuthState {
+     final AuthAction loadingAction;
+     final String? errorMessage;
+     
+     bool get isAnyLoading => loadingAction != AuthAction.none;
+     bool isLoading(AuthAction action) => loadingAction == action;
+   }
+   ```
+
+2. **Targeted Loader vs. Graceful Disabling**:
+   - **Only the triggered button shows the spinner**: `isLoading: state.isLoading(AuthAction.google)`.
+   - **Sibling buttons are safely disabled WITHOUT showing spinners**: `isDisabled: state.isAnyLoading`.
+   ```dart
+   // Google Button
+   AppButton(
+     text: localizations.continueWithGoogle,
+     isLoading: state.isLoading(AuthAction.google),
+     isDisabled: state.isAnyLoading,
+     onPressed: () => ref.read(authNotifierProvider.notifier).signInWithGoogle(),
+   ),
+   const SizedBox(height: 12),
+   // Apple Button
+   AppButton(
+     text: localizations.continueWithApple,
+     isLoading: state.isLoading(AuthAction.apple),
+     isDisabled: state.isAnyLoading,
+     onPressed: () => ref.read(authNotifierProvider.notifier).signInWithApple(),
+   ),
+   ```
+
+3. **Per-Item Loading in Lists & Collections**:
+   - In lists with interactive action triggers (e.g., "Follow", "Apply", "Delete", "Bookmark"), track loading state per item ID (`final Set<String> loadingItemIds;`).
+   - Only the row matching the tapped ID displays a spinner; the rest of the list remains clear and stable.
+
+---
+
+## 6. 🏛️ Phase 6: Domain-Driven Clean Architecture & Inversion of Control
 
 Group code strictly by **Business Domain Features**, never solely by technical type.
 
@@ -260,7 +336,7 @@ lib/
 
 ---
 
-## 6. 🛡️ Phase 6: Exhaustive 4-State UI Contract & Error Architecture
+## 7. 🛡️ Phase 7: Exhaustive 4-State UI Contract & Error Architecture
 
 Every data-driven screen MUST implement the **Canonical 4-State Contract**:
 
@@ -302,7 +378,7 @@ class ServerFailure extends AppFailure {
 
 ---
 
-## 7. 🚀 Phase 7: OS-Native Polish, Routing & Production Diagnostics
+## 8. 🚀 Phase 8: OS-Native Polish, Routing & Production Diagnostics
 
 1. **True Edge-to-Edge System Bars**:
    - Transparent navigation and status bars with adaptive icon brightness:
@@ -338,12 +414,12 @@ class ServerFailure extends AppFailure {
 
 ---
 
-## 8. 🧪 Phase 8: Comprehensive Automated Testing Matrix
+## 9. 🧪 Phase 9: Comprehensive Automated Testing Matrix
 
 Senior code is verified across three testing tiers:
 1. **Unit Tests**: Domain entities, use cases, business validation logic, DTO mapping.
 2. **State Controller Tests**: Verifying state transitions (Loading -> Success, Loading -> Error) using isolated DI containers.
-3. **Widget & Interaction Tests**: Verifying UI contracts, tap triggers, empty state renders, and error retry flows using mocks (`mocktail`).
+3. **Widget & Interaction Tests**: Verifying UI contracts, tap triggers, isolated button loadings, empty state renders, and error retry flows using mocks (`mocktail`).
 
 ---
 
@@ -357,9 +433,9 @@ When prompted to create or evolve a mobile feature, the AI MUST follow this exac
    - Define localized string keys (FR & EN). Confirm typography tokens and vector iconography.
 3. **Step 3 (Domain & Contracts)**:
    - Write pure Dart entities and abstract repository contracts.
-4. **Step 4 (Data & State)**:
-   - Implement data sources, DTOs, and reactive state notifiers with typed failures.
-5. **Step 5 (Presentation with 4-State UI & Responsiveness)**:
-   - Build UI using `AppButton`, responsive extensions, keyboard scroll safety, and shimmer loading.
+4. **Step 4 (Data, State & Granular Loading)**:
+   - Implement data sources, DTOs, and reactive state notifiers with typed failures and isolated action loading identifiers (`loadingAction`).
+5. **Step 5 (Presentation with 4-State UI & Homothetic Responsiveness)**:
+   - Build UI using `AppButton`, `context.rW()`, `context.rH()`, `context.rSize()`, `context.rSp()`, `FittedBox` title safety, keyboard scroll hygiene, and shimmer loading.
 6. **Step 6 (OS Polish & Verification)**:
-   - Verify Edge-to-Edge compliance, zero hardcoded strings, zero emojis, and run automated tests.
+   - Verify Edge-to-Edge compliance, zero hardcoded strings, zero emojis, zero shared loading flashes, and run automated tests.

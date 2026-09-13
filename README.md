@@ -12,8 +12,9 @@ These skills transform AI assistants from general code generators into **Senior 
 Universal end-to-end senior engineering and product craft doctrine for production mobile applications:
 - **Product Strategy & Page Rationalization**: The 4-Hat Mindset, "Page Justification" filter, streamlined navigation architecture (max 3-5 tabs, modal bottom sheets).
 - **World-Class UI/UX Standards**: Strict zero-emoji policy, zero fake AI/marketing badges, non-flat refined gradients/surfaces, thumb-zone ergonomics (>= 48x48dp touch targets).
-- **Native Bilingual i18n (FR/EN)**: Zero hardcoded user strings, strict dual-language parity from Day 0, resilience against text expansion.
-- **Zero-Overflow Responsive Engine**: System `textScaler` clamping (0.85x - 1.15x), proportional ratio scaling context extensions, safe universal primitives (`AppButton`), keyboard avoidance scroll containers.
+- **Native Bilingual i18n (FR/EN)**: Zero hardcoded user strings, strict dual-language parity from Day 0, resilience against text expansion (+30% FR).
+- **Homothetic Zero-Overflow Responsive Engine**: System `textScaler` clamping (0.85x - 1.15x), Screen Ratio Engine (`rW`, `rH`, `rSize`, `rSp`, `rPad` clamped 0.68x-1.15x), dynamic title protection (`FittedBox` scaleDown), safe universal primitives (`AppButton`), keyboard avoidance scroll containers.
+- **Granular Action Loading & Button State Isolation**: Elimination of amateur multi-button spinner flashing. Scoped action enums (`loadingAction`), targeted spinner rendering on the tapped button only, graceful non-spinning disabling of sibling actions, and per-item loading tracking in lists.
 - **Domain-Driven Clean Architecture (DDD)**: Feature-First structure, 100% pure Dart `domain/` layer, reactive Inversion of Control ($UI = f(State)$), Zero-Trust client security with compile-time `--dart-define`.
 - **4-State UI Contract & Error Architecture**: Canonical `Loading` (Shimmer/Skeleton), `Data/Success` (Pull-to-refresh), `Empty` (Illustration + CTA), and `Error` (Failure explanation + Retry button) states.
 - **OS Polish & Diagnostics**: True Edge-to-Edge system bar overlays, native OS splash screens (`flutter_native_splash`), centralized declarative routing (`GoRouter`), and structured `AppLogger`.
