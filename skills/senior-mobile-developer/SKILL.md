@@ -6,25 +6,26 @@ description: >-
   Enforces Product Discovery & Page Rationalization, World-Class UI/UX Standards (Zero-Emoji, Zero Fake-AI, Thumb-Zone ergonomics),
   Adaptive i18n & Centralized Text Architecture, Homothetic Zero-Overflow Responsive Engine (Screen Ratio Engine),
   Granular Button & Action Loading Isolation, Scalable Domain-Driven Clean Architecture (DDD), Exhaustive 4-State UI Contracts,
-  Edge-to-Edge OS Polish, Zero-Trust Client Security, and Structured Diagnostics.
+  End-to-End Testing Matrix (Unit, State, Golden/Visual, Integration/E2E, Chaos/Offline, Security & a11y),
+  App Lifecycle & Background Sync, Edge-to-Edge OS Polish, Zero-Trust Client Security, and Observability/CI-CD.
   Apply across ANY mobile application project to build with senior-level craft and product thinking from day 0.
 ---
 
 # 📱 Universal Senior Mobile Application Engineering & Product Doctrine
 
-This doctrine establishes the **Complete Senior Lifecycle Framework** for conceiving, architecting, and delivering production-grade mobile applications. It empowers developers and AI agents to operate not merely as code generators, but as **Senior Product Engineers and Principal Mobile Architects** capable of tailoring standards intelligently to the specific scope and nature of any project.
+This doctrine establishes the **Complete Senior Lifecycle Framework** for conceiving, architecting, testing, and delivering world-class mobile applications. It empowers developers and AI agents to operate not merely as code generators, but as **Senior Product Engineers and Principal Mobile Architects** capable of tailoring standards intelligently to the specific scope, risk profile, and maturity of any project.
 
 ---
 
 ## 🎯 Modular Architecture & Project Profiling Matrix
 
-A true senior engineer does not apply a heavy enterprise hammer to every lightweight nail. Before writing code, the AI/engineer must identify the **Project Profile** to adapt requirements conditionally:
+Before writing code, the AI/engineer must identify the **Project Profile** to adapt requirements conditionally:
 
-| Project Profile | Internationalization (i18n) | Architecture Depth | Backend / Security | State Management |
-| :--- | :--- | :--- | :--- | :--- |
-| 🌐 **Enterprise / Scale / International** | Strict Dual/Multi-language parity (`AppLocalizations` FR/EN) | Full DDD Feature-First (Domain, Data, Presentation, UseCases) | Remote APIs, Zero-Trust secrets, compile-time `--dart-define` | Riverpod / Bloc with Granular Action Scoping |
-| ⚡ **Focused MVP / Product Launch** | Monolingual Centralized Strings (`AppStrings` / i18n ready) | Pragmatic Feature-First (Entities + Repositories + Presentation) | Targeted Backend / Firebase / Supabase | Reactive Notifiers / Cubits with isolated action states |
-| 💾 **Local-First / Standalone Tool** | Single/Multi-language based on target audience | Domain-First with Local Storage DataSources (Isar, Hive, SQLite) | Local encryption, zero remote secrets | Local state controllers & Stream observers |
+| Project Profile | Internationalization (i18n) | Architecture Depth | Testing Matrix Tier | Backend / Security | Observability & Release |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| 🌐 **Enterprise / FinTech / High-Scale** | Strict Multi-language Parity (`AppLocalizations` FR/EN) | Full DDD Feature-First (Domain, Data, Presentation, UseCases) | Tiers 1 to 8 (Unit, State, Goldens, E2E, Chaos, a11y, Security) | Remote APIs, Zero-Trust secrets, compile-time `--dart-define` | Crashlytics/Sentry, Fastlane CI/CD, Feature Flags |
+| ⚡ **Focused MVP / Product Launch** | Monolingual Centralized Strings (`AppStrings` / i18n ready) | Pragmatic Feature-First (Entities + Repositories + Notifiers) | Tiers 1, 2, 3 (Unit, State, Widget Contracts) | Targeted Backend / Firebase / Supabase | Structured `AppLogger`, basic error boundaries |
+| 💾 **Local-First / Standalone Tool** | Single/Multi-language based on target audience | Domain-First with Local Storage DataSources (Isar, Hive, SQLite) | Tiers 1, 2, 5 (Unit, State, Offline/Sync & DB migrations) | Local encryption, zero remote secrets | Local structured logging, database backup |
 
 ---
 
@@ -36,13 +37,13 @@ Before writing a single line of code, the engineer and AI must cycle through 4 d
 graph LR
     A["1. Product Strategist<br/>(Value, Scope & Page Rationalization)"] --> B["2. Principal UI/UX Designer<br/>(Design System & Ergonomics)"]
     B --> C["3. Senior Software Architect<br/>(Clean DDD, State & Granular Loading)"]
-    C --> D["4. Production & QA Engineer<br/>(Polish, Homothetic Insets & Diagnostics)"]
+    C --> D["4. Production & QA Engineer<br/>(Testing Matrix, Polish & Insets)"]
 ```
 
 1. **Product Strategist**: Profile project scope, challenge the need for every screen, eliminate friction, and streamline the core value loop.
 2. **Principal UI/UX Designer**: Build cohesive design tokens, enforce thumb-friendly ergonomics, and reject amateur visuals.
 3. **Senior Software Architect**: Enforce pure domain models, reactive state, typed failures, granular loading states, and conditional architecture depth.
-4. **Production & QA Engineer**: Ensure zero overflow, homothetic scaling, OS edge-to-edge transparency, native splash, and automated testability.
+4. **Production & QA Engineer**: Execute the comprehensive multi-tier testing matrix, ensure zero overflow, homothetic scaling, OS edge-to-edge transparency, and lifecycle resilience.
 
 ---
 
@@ -386,7 +387,109 @@ stateDiagram-v2
 
 ---
 
-## 8. 🚀 Phase 8: OS-Native Polish, Routing & Production Diagnostics
+## 8. 🧪 Phase 8: Comprehensive 8-Tier Mobile Testing Matrix (World-Class Standards)
+
+Senior mobile engineers and high-growth tech companies verify applications across an exhaustive **8-Tier Testing Matrix**. Apply each tier conditionally based on the project's risk and maturity profile:
+
+```mermaid
+graph TD
+    T1["Tier 1: Pure Domain & Unit Tests"] --> T2["Tier 2: State Controller & Notifier Tests"]
+    T2 --> T3["Tier 3: Widget Contracts & Golden Visual Tests"]
+    T3 --> T4["Tier 4: End-to-End (E2E) & Integration Flows"]
+    T4 --> T5["Tier 5: Chaos, Offline & Network Resilience Tests"]
+    T5 --> T6["Tier 6: Performance, Frame Jank & Memory Leak Profiling"]
+    T6 --> T7["Tier 7: Security SAST & Binary Secret Audits"]
+    T7 --> T8["Tier 8: Accessibility (a11y) & Screen Reader Compliance"]
+```
+
+### 📋 Tier Breakdown & Execution Protocols:
+
+#### 1. 🔬 Tier 1: Pure Domain & Unit Tests (Mandatory for ALL Projects)
+- **Scope**: Entities, Value Objects, Business validation rules, DTO serialization/deserialization, Formatter utilities.
+- **Rules**: Zero Flutter dependencies, executes in milliseconds, 100% deterministic (no real network or disk).
+- **Example**:
+  ```dart
+  test('UserEntity calculates completion score accurately', () {
+    final user = UserEntity(hasAvatar: true, hasResume: true, skillsCount: 4);
+    expect(user.profileCompletionPercentage, 85);
+  });
+  ```
+
+#### 2. ⚡ Tier 2: State Controller & Notifier Tests (Mandatory for ALL Projects)
+- **Scope**: State transitions in Riverpod `AsyncNotifier`, Bloc `Cubit`, or ViewModel.
+- **Verification**:
+  - Initial $ightarrow$ Loading $ightarrow$ Success (with payload).
+  - Initial $ightarrow$ Loading $ightarrow$ Failure (`AppFailure` mapped).
+  - **Granular Loading Isolation**: Verify only the specific `loadingAction` changes during multi-button flows.
+- **Tools**: `mocktail`, `flutter_test`.
+
+#### 3. 🖼️ Tier 3: Widget Contracts & Golden Visual Tests
+- **Scope**: Testing UI components across the 4 canonical states (*Loading Shimmer, Data, Empty, Error*).
+- **Responsive Multi-Screen Simulation**: Testing widgets under simulated viewports:
+  - Compact (320x568 - iPhone SE)
+  - Standard (390x844 - iPhone 14/15)
+  - Large (448x998 - Pixel 8 Pro / Pro Max)
+- **Text-Scaling Tolerance**: Test widget under `textScaler: 1.4x` to guarantee zero `RenderFlex overflow`.
+- **Golden Tests (Enterprise/Scale)**: Pixel-perfect snapshot regression tests verifying Light/Dark mode appearance.
+
+#### 4. 🔄 Tier 4: End-to-End (E2E) & Critical Flow Tests
+- **Scope**: Automated navigation through entire business user journeys (e.g., *Onboarding $ightarrow$ Sign In $ightarrow$ Search Job $ightarrow$ Submit Application $ightarrow$ Confirmation*).
+- **Route & Guard Verification**: Verify unauthenticated users hitting `/profile` are redirected to `/login`, and deep links `/jobs/:id` navigate to the correct detail view.
+- **Tools**: `integration_test`, `Patrol`, or `Maestro`.
+- *Condition*: Required for Enterprise / Production apps; optional for early MVPs.
+
+#### 5. 🔌 Tier 5: Chaos, Offline & Network Resilience Tests
+- **Scope**: How the app survives real-world mobile conditions:
+  - **Network Timeout & Slow 3G**: Ensuring timeouts throw user-friendly `NetworkFailure` with retry triggers.
+  - **HTTP 401 Unauthorized**: Ensuring expired tokens trigger automatic silent refresh or clean logout.
+  - **HTTP 500 Server Errors**: Ensuring graceful error states without crashing.
+  - **Offline-First Mode**: Verifying cached data displays immediately when disconnected from internet.
+
+#### 6. 🏎️ Tier 6: Performance, Frame Jank & Memory Leak Profiling
+- **Target**: Continuous 60fps / 120fps scrolling with zero frame drops (render time $< 16\,	ext{ms}$ per frame).
+- **Resource Disposal Verification**: Automated test verifying all `StreamSubscription`, `TextEditingController`, `AnimationController`, and `Timer` instances are cancelled when navigating away.
+- **Binary Size Budget**: Monitoring APK/AAB and IPA binary size to prevent asset bloat.
+
+#### 7. 🔒 Tier 7: Security SAST & Binary Secret Audits
+- **Scope**:
+  - Scanning compiled binaries to ensure **zero private API keys, master passwords, or tokens** are embedded in plaintext.
+  - Verifying sensitive data stored locally uses encrypted containers (`FlutterSecureStorage` with Android KeyStore / iOS Keychain).
+  - Verifying SSL Pinning and Certificate Transparency for FinTech/Banking apps.
+
+#### 8. ♿ Tier 8: Accessibility (a11y) & Screen Reader Compliance
+- **Scope**:
+  - Verify every interactive button has a clear semantic label for TalkBack / VoiceOver.
+  - Minimum touch target verification ($\ge 48 	imes 48\,	ext{dp}$).
+  - Contrast ratio verification ($\ge 4.5:1$ for normal text, $\ge 3.0:1$ for large headings).
+
+---
+
+## 9. 🔄 Phase 9: App Lifecycle, Background Sync & Observability
+
+Enterprise-grade mobile apps handle OS interruptions gracefully:
+
+1. **App Lifecycle Management (`WidgetsBindingObserver`)**:
+   - **`AppLifecycleState.resumed`**: Refresh stale auth tokens, check for critical remote config updates, resume paused UI timers.
+   - **`AppLifecycleState.paused` / `inactive`**: Pause resource-heavy streams, camera controllers, and sensor polling to preserve battery.
+
+2. **Network Reconnection Synchronization**:
+   - Monitor connection state (`connectivity_plus`). Automatically re-sync pending offline actions (e.g. queued form submissions) when internet returns.
+
+3. **Structured Diagnostics & Crash Telemetry**:
+   - Strictly prohibit raw `print()` statements.
+   - Centralized `AppLogger` (`d`, `i`, `w`, `e`) integrated with Sentry or Firebase Crashlytics:
+     - Automatically attach non-sensitive breadcrumbs (user navigation path) to crash reports.
+     - **Strict Privacy Rule**: Never send PII, passwords, or credit card numbers to external logging servers.
+
+4. **CI/CD Automated Release Gates (Fastlane / GitHub Actions)**:
+   - Automated pipeline triggering on pull requests:
+     1. `flutter analyze` (Zero warnings/lint errors).
+     2. `flutter test` (Unit, State, Widget contracts).
+     3. Automated build of release AAB/IPA with `--dart-define` compilation.
+
+---
+
+## 10. 🚀 Phase 10: OS-Native Polish, Routing & Production Deployment
 
 1. **True Edge-to-Edge System Bars**:
    - Transparent navigation and status bars with adaptive icon brightness:
@@ -409,22 +512,6 @@ stateDiagram-v2
 3. **Declarative Routing & Deep Linking**:
    - Centralized declarative router (`GoRouter`) with authentication guards (`redirect` callback) and parameterized deep link routes (`/items/:id`).
 
-4. **Structured Logging (`AppLogger`)**:
-   - Strictly prohibit raw `print()` statements.
-   - Use centralized leveled logging (`d`, `i`, `w`, `e`).
-
-5. **Resource Lifecycle Safety**:
-   - Every `AnimationController`, `TextEditingController`, `StreamSubscription`, and `Timer` must be explicitly cancelled and disposed in `dispose()` or Riverpod `ref.onDispose()`.
-
----
-
-## 9. 🧪 Phase 9: Comprehensive Automated Testing Matrix
-
-Senior code is verified across three testing tiers:
-1. **Unit Tests**: Domain entities, use cases, business validation logic, DTO mapping.
-2. **State Controller Tests**: Verifying state transitions (Loading -> Success, Loading -> Error) using isolated DI containers.
-3. **Widget & Interaction Tests**: Verifying UI contracts, tap triggers, isolated button loadings, empty state renders, and error retry flows using mocks (`mocktail`).
-
 ---
 
 ## 🤖 Step-by-Step AI Execution Protocol
@@ -436,12 +523,14 @@ When prompted to create or evolve a mobile feature, the AI MUST follow this exac
    - Challenge screen count. Propose the minimal, most intuitive flow.
 2. **Step 2 (Design System & Centralized Text)**:
    - Determine text strategy (`AppLocalizations` FR/EN or `AppStrings`).
-   - Confirm typography tokens and vector iconography.
+   - Confirm typography tokens, non-flat surface gradients, and vector iconography.
 3. **Step 3 (Domain & Contracts)**:
    - Write pure Dart entities and abstract repository contracts.
 4. **Step 4 (Data, State & Granular Loading)**:
    - Implement data sources, DTOs, and reactive state notifiers with typed failures and isolated action loading identifiers (`loadingAction`).
 5. **Step 5 (Presentation with UI Contracts & Homothetic Responsiveness)**:
    - Build UI using `AppButton`, `context.rW()`, `context.rH()`, `context.rSize()`, `context.rSp()`, `FittedBox` title safety, keyboard scroll hygiene, and shimmer loading.
-6. **Step 6 (OS Polish & Verification)**:
-   - Verify Edge-to-Edge compliance, zero hardcoded strings, zero emojis, zero shared loading flashes, and run automated tests.
+6. **Step 6 (Testing & QA Execution)**:
+   - Write Unit tests (Domain & DTOs), State Notifier tests, and Widget contract tests (testing 320dp, 390dp, 448dp + 1.4x text scaling).
+7. **Step 7 (OS Polish & Verification)**:
+   - Verify Edge-to-Edge compliance, zero hardcoded strings, zero emojis, zero shared loading flashes, lifecycle cleanup, and run automated test suite.
