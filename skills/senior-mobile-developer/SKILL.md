@@ -2,15 +2,29 @@
 name: senior-mobile-developer
 description: >-
   Universal End-to-End Senior Mobile Engineering, Product & UI/UX Architecture Doctrine.
+  Features Modular & Conditional Project Modes (Enterprise/Scale vs MVP/Monolingual vs Local-First).
   Enforces Product Discovery & Page Rationalization, World-Class UI/UX Standards (Zero-Emoji, Zero Fake-AI, Thumb-Zone ergonomics),
-  Native Bilingual i18n (FR/EN), Homothetic Zero-Overflow Responsive Engine (Screen Ratio Engine), Granular Button & Action Loading Isolation,
-  Domain-Driven Clean Architecture (DDD), Exhaustive 4-State UI Contracts, Edge-to-Edge OS Polish, Zero-Trust Client Security, and Structured Diagnostics.
+  Adaptive i18n & Centralized Text Architecture, Homothetic Zero-Overflow Responsive Engine (Screen Ratio Engine),
+  Granular Button & Action Loading Isolation, Scalable Domain-Driven Clean Architecture (DDD), Exhaustive 4-State UI Contracts,
+  Edge-to-Edge OS Polish, Zero-Trust Client Security, and Structured Diagnostics.
   Apply across ANY mobile application project to build with senior-level craft and product thinking from day 0.
 ---
 
 # 📱 Universal Senior Mobile Application Engineering & Product Doctrine
 
-This doctrine establishes the **Complete Senior Lifecycle Framework** for conceiving, architecting, and delivering production-grade mobile applications. It empowers developers and AI agents to operate not merely as code generators, but as **Senior Product Engineers and Principal Mobile Architects**.
+This doctrine establishes the **Complete Senior Lifecycle Framework** for conceiving, architecting, and delivering production-grade mobile applications. It empowers developers and AI agents to operate not merely as code generators, but as **Senior Product Engineers and Principal Mobile Architects** capable of tailoring standards intelligently to the specific scope and nature of any project.
+
+---
+
+## 🎯 Modular Architecture & Project Profiling Matrix
+
+A true senior engineer does not apply a heavy enterprise hammer to every lightweight nail. Before writing code, the AI/engineer must identify the **Project Profile** to adapt requirements conditionally:
+
+| Project Profile | Internationalization (i18n) | Architecture Depth | Backend / Security | State Management |
+| :--- | :--- | :--- | :--- | :--- |
+| 🌐 **Enterprise / Scale / International** | Strict Dual/Multi-language parity (`AppLocalizations` FR/EN) | Full DDD Feature-First (Domain, Data, Presentation, UseCases) | Remote APIs, Zero-Trust secrets, compile-time `--dart-define` | Riverpod / Bloc with Granular Action Scoping |
+| ⚡ **Focused MVP / Product Launch** | Monolingual Centralized Strings (`AppStrings` / i18n ready) | Pragmatic Feature-First (Entities + Repositories + Presentation) | Targeted Backend / Firebase / Supabase | Reactive Notifiers / Cubits with isolated action states |
+| 💾 **Local-First / Standalone Tool** | Single/Multi-language based on target audience | Domain-First with Local Storage DataSources (Isar, Hive, SQLite) | Local encryption, zero remote secrets | Local state controllers & Stream observers |
 
 ---
 
@@ -20,14 +34,14 @@ Before writing a single line of code, the engineer and AI must cycle through 4 d
 
 ```mermaid
 graph LR
-    A["1. Product Strategist<br/>(Value & Page Rationalization)"] --> B["2. Principal UI/UX Designer<br/>(Design System & Ergonomics)"]
-    B --> C["3. Senior Software Architect<br/>(Clean DDD, i18n & State)"]
-    C --> D["4. Production & QA Engineer<br/>(Polish, Insets & Diagnostics)"]
+    A["1. Product Strategist<br/>(Value, Scope & Page Rationalization)"] --> B["2. Principal UI/UX Designer<br/>(Design System & Ergonomics)"]
+    B --> C["3. Senior Software Architect<br/>(Clean DDD, State & Granular Loading)"]
+    C --> D["4. Production & QA Engineer<br/>(Polish, Homothetic Insets & Diagnostics)"]
 ```
 
-1. **Product Strategist**: Challenge the need for every screen, eliminate friction, and streamline the core value loop.
+1. **Product Strategist**: Profile project scope, challenge the need for every screen, eliminate friction, and streamline the core value loop.
 2. **Principal UI/UX Designer**: Build cohesive design tokens, enforce thumb-friendly ergonomics, and reject amateur visuals.
-3. **Senior Software Architect**: Enforce pure domain models, reactive state, typed failures, granular loading states, and zero-trust security.
+3. **Senior Software Architect**: Enforce pure domain models, reactive state, typed failures, granular loading states, and conditional architecture depth.
 4. **Production & QA Engineer**: Ensure zero overflow, homothetic scaling, OS edge-to-edge transparency, native splash, and automated testability.
 
 ---
@@ -87,28 +101,35 @@ For every screen requested or planned, ask:
 
 ---
 
-## 3. 🌍 Phase 3: Native Bilingual Localization (i18n) from Day 0
+## 3. 🌍 Phase 3: Adaptive Internationalization (i18n) & Centralized Text Architecture
 
 ### 🔴 Anti-Patterns
 - Hardcoding raw user-facing strings (`Text("Connexion")` or `Text("Submit")`) directly in widgets.
-- Adding strings in French only or English only without strict dual-language parity.
-- Designing fixed-width buttons that overflow when translated (French text is typically 20–30% longer than English).
+- Forcing full bilingual translation overhead on single-language local MVPs when not requested.
+- Neglecting text expansion: designing fixed-width containers that break when translated to longer languages (French text is typically 20–30% longer than English).
 
-### 🟢 Senior Architectural Doctrine
+### 🟢 Senior Architectural Doctrine (Conditional Implementation)
 
-1. **Zero Hardcoded Text Rule**:
-   - Every string presented to the user (titles, labels, buttons, tooltips, validation errors, dialogs, empty states) MUST be registered in the localization dictionary (`AppLocalizations`).
-   - Every translation key must have complete, natural translations in **both French (`fr`) and English (`en`)**.
+#### 🔀 Condition A: Multi-Language / International Project (e.g., French + English Parity)
+- **Mandatory Dual-Dictionary**: Every string presented to the user (titles, labels, buttons, tooltips, validation errors, dialogs, empty states) MUST be registered in the localization dictionary (`AppLocalizations`).
+- **Strict Parity**: Every key must have natural, verified translations in **both French (`fr`) and English (`en`)**.
+- **Access Pattern**:
+  ```dart
+  Text(AppLocalizations.of(context).loginButtonLabel)
+  ```
 
-2. **Access Contract**:
-   ```dart
-   // Direct typed access
-   Text(AppLocalizations.of(context).loginButtonLabel)
-   ```
+#### 🔀 Condition B: Single-Language Project / Local MVP (e.g., 100% French or 100% English)
+- **Centralized Text Architecture**: Zero raw strings scattered in widget trees. All strings are organized in a dedicated semantic constants class (`AppStrings` or single-locale `AppLocalizations`).
+- **Zero Translation Overhead**: Do NOT invent or force a secondary language file if the product specifications do not require it.
+- **Future-Ready Contract**:
+  ```dart
+  // Clean centralized access
+  Text(AppStrings.loginButtonLabel)
+  ```
 
-3. **Text Expansion Resilience**:
-   - Never set fixed `width` on containers holding translated text.
-   - Use `Wrap`, `Flexible`, `Expanded`, or `FittedBox` with `maxLines` and `TextOverflow.ellipsis`.
+#### 📐 Universal Text Resilience (Applies to ALL Projects):
+- Never set rigid fixed `width` on containers holding user text.
+- Always protect text with `Wrap`, `Flexible`, `Expanded`, or `FittedBox(fit: BoxFit.scaleDown)` with `maxLines` and `TextOverflow.ellipsis`.
 
 ---
 
@@ -248,8 +269,9 @@ For every screen requested or planned, ask:
 - ❌ **Monolithic `isLoading` Flag**: Using a single global boolean `isLoading` on a screen containing multiple action buttons (e.g. "Continue with Google", "Continue with Apple", "Sign In with Email", or "Save Draft" vs "Publish").
 - ❌ **Mass Button Spinning**: When the user taps one button, *every* button on the screen abruptly turns into a spinner simultaneously. This looks chaotic, amateurish, and confuses the user about which process is running.
 
-### 🟢 Senior Architectural Doctrine
+### 🟢 Senior Architectural Doctrine (Conditional & Adaptive)
 
+#### 🔀 Multi-Action Screens (Auth, Workflows, Wizard):
 1. **Scoped Action Identifiers / Enums**:
    - Model asynchronous actions as typed enums or distinct identifiers:
    ```dart
@@ -270,7 +292,7 @@ For every screen requested or planned, ask:
    ```dart
    // Google Button
    AppButton(
-     text: localizations.continueWithGoogle,
+     text: strings.continueWithGoogle,
      isLoading: state.isLoading(AuthAction.google),
      isDisabled: state.isAnyLoading,
      onPressed: () => ref.read(authNotifierProvider.notifier).signInWithGoogle(),
@@ -278,22 +300,25 @@ For every screen requested or planned, ask:
    const SizedBox(height: 12),
    // Apple Button
    AppButton(
-     text: localizations.continueWithApple,
+     text: strings.continueWithApple,
      isLoading: state.isLoading(AuthAction.apple),
      isDisabled: state.isAnyLoading,
      onPressed: () => ref.read(authNotifierProvider.notifier).signInWithApple(),
    ),
    ```
 
-3. **Per-Item Loading in Lists & Collections**:
-   - In lists with interactive action triggers (e.g., "Follow", "Apply", "Delete", "Bookmark"), track loading state per item ID (`final Set<String> loadingItemIds;`).
-   - Only the row matching the tapped ID displays a spinner; the rest of the list remains clear and stable.
+#### 🔀 Interactive Lists & Collections:
+- In lists with row-level action triggers (e.g., "Follow", "Apply", "Delete", "Bookmark"), track loading state per item ID (`final Set<String> loadingItemIds;`).
+- Only the row matching the tapped ID displays a spinner; the rest of the list remains clear and stable.
+
+#### 🔀 Single-Action Dedicated Screens:
+- On screens with a single isolated primary action (e.g., "Confirm SMS Code"), a simple boolean `isLoading` is fully acceptable and optimal.
 
 ---
 
-## 6. 🏛️ Phase 6: Domain-Driven Clean Architecture & Inversion of Control
+## 6. 🏛️ Phase 6: Scalable Domain-Driven Clean Architecture
 
-Group code strictly by **Business Domain Features**, never solely by technical type.
+Adapt architecture depth to the project's scale:
 
 ```
 lib/
@@ -301,21 +326,21 @@ lib/
 │   ├── config/              # Environment config & compile-time variables
 │   ├── di/                  # Dependency Injection container & root providers
 │   ├── errors/              # Universal Failure & Exception models
-│   ├── localization/        # AppLocalizations (FR/EN)
-│   ├── network/             # HTTP client, interceptors, retry policies
+│   ├── localization/        # AppLocalizations (or AppStrings)
+│   ├── network/             # HTTP client, interceptors (if remote backend)
 │   ├── theme/               # Semantic design tokens, typography (AppTypography)
 │   ├── utils/               # Structured AppLogger, formatters, extensions
 │   └── widgets/             # Core reusable UI primitives (AppButton, AppTextField, Shimmer)
 └── features/
     └── [feature_name]/
         ├── data/
-        │   ├── datasources/ # Remote API clients, local SQLite/Hive/SecureStorage
-        │   ├── dto/         # Data Transfer Objects (serialization & deserialization)
+        │   ├── datasources/ # Remote API / Local SQLite/Hive/Isar
+        │   ├── dto/         # Data Transfer Objects (serialization)
         │   └── repositories/# Concrete repository implementations
         ├── domain/
-        │   ├── entities/    # Pure Dart business objects (immutable, ZERO serialization logic)
+        │   ├── entities/    # Pure Dart business objects (immutable, ZERO serialization)
         │   ├── repositories/# Abstract repository contracts (interface I[Feature]Repository)
-        │   └── usecases/    # Single-responsibility business use cases
+        │   └── usecases/    # Business use cases (required for Enterprise, optional for simple CRUD)
         └── presentation/
             ├── providers/   # State controllers (AsyncNotifiers, Blocs, Cubits)
             ├── screens/     # Top-level screen widgets (Pure UI renderers)
@@ -325,11 +350,11 @@ lib/
 ### 💎 The Domain Purity Rule:
 - The `domain/` layer must be **100% pure Dart**. It MUST NEVER import `package:flutter`, `dart:io`, or database drivers.
 
-### ⚡ Reactive Inversion of Control ($UI = f(State)$):
-- Repositories and datasources are injected via dependency injection (Riverpod Providers or GetIt).
-- Widgets never perform asynchronous fetching inside `initState()` with `setState()`.
+### ⚡ Pragmatic Clean Architecture vs Over-Engineering:
+- **Enterprise / Scale**: Full layers with explicit UseCases for complex business orchestrations.
+- **Focused MVP**: Pragmatic Clean Architecture (Entities + Abstract Repositories + Notifiers). Do NOT create pass-through UseCases that do nothing except forward a single call to the repository without business logic.
 
-### 🔒 Zero-Trust Client Security:
+### 🔒 Zero-Trust Security (When Connecting to Remote Services):
 - **Never store sensitive secrets in the app binary**: Admin keys, master database passwords, and service role keys must only live on the server or Edge functions.
 - Inject public publishable variables at compile time:
   `flutter build apk --dart-define=API_BASE_URL=https://api.domain.com --dart-define=PUBLIC_KEY=pk_live_...`
@@ -338,7 +363,8 @@ lib/
 
 ## 7. 🛡️ Phase 7: Exhaustive 4-State UI Contract & Error Architecture
 
-Every data-driven screen MUST implement the **Canonical 4-State Contract**:
+### 🔀 Asynchronous / Data-Driven Views:
+Every screen that fetches data from an async source (Remote API, DB query, File I/O) MUST implement the **Canonical 4-State Contract**:
 
 ```mermaid
 stateDiagram-v2
@@ -350,31 +376,13 @@ stateDiagram-v2
     Success --> Loading: Pull-to-refresh
 ```
 
-### 1. Universal Failure Hierarchy:
-```dart
-sealed class AppFailure {
-  final String userMessage;
-  const AppFailure(this.userMessage);
-}
-
-class NetworkFailure extends AppFailure {
-  const NetworkFailure([super.userMessage = 'Vérifiez votre connexion internet.']);
-}
-
-class NotFoundFailure extends AppFailure {
-  const NotFoundFailure([super.userMessage = 'La ressource demandée est introuvable.']);
-}
-
-class ServerFailure extends AppFailure {
-  const ServerFailure([super.userMessage = 'Un problème technique est survenu.']);
-}
-```
-
-### 2. The 4 Mandatory Visual States:
 1. **Loading**: Content-shaped **Skeleton/Shimmer** loader matching the exact shape of the incoming content (never a solitary raw center spinner).
 2. **Success / Data**: The rendered view with native **Pull-to-Refresh** (`RefreshIndicator`).
 3. **Empty**: Contextual vector illustration + clear localized explanation + primary **Call to Action** button.
 4. **Error**: Clear human-friendly explanation + prominent **"Réessayer / Retry"** action button.
+
+### 🔀 Synchronous / Pure Form Screens:
+- Do not invent artificial `Loading` or `Empty` states for instantaneous local views. Ensure instant rendering, responsive validation messages on fields, and clear snackbar/toast feedback on completion.
 
 ---
 
@@ -403,11 +411,7 @@ class ServerFailure extends AppFailure {
 
 4. **Structured Logging (`AppLogger`)**:
    - Strictly prohibit raw `print()` statements.
-   - Use centralized leveled logging:
-     - `AppLogger.d(msg)`: Verbose debug logs (stripped in release).
-     - `AppLogger.i(msg)`: High-level lifecycle & navigation events.
-     - `AppLogger.w(msg)`: Recoverable warnings.
-     - `AppLogger.e(msg, [err, stack])`: Critical errors logged with stack traces.
+   - Use centralized leveled logging (`d`, `i`, `w`, `e`).
 
 5. **Resource Lifecycle Safety**:
    - Every `AnimationController`, `TextEditingController`, `StreamSubscription`, and `Timer` must be explicitly cancelled and disposed in `dispose()` or Riverpod `ref.onDispose()`.
@@ -427,15 +431,17 @@ Senior code is verified across three testing tiers:
 
 When prompted to create or evolve a mobile feature, the AI MUST follow this exact sequence:
 
-1. **Step 1 (Product & UX Rationalization)**:
-   - Challenge screen count. Propose the minimal, most intuitive flow. Confirm whether modal sheets or inline cards are better than full screens.
-2. **Step 2 (Design System & i18n Keys)**:
-   - Define localized string keys (FR & EN). Confirm typography tokens and vector iconography.
+1. **Step 1 (Project Profiling & Product Scope)**:
+   - Identify project mode: Enterprise/Bilingual vs MVP/Monolingual vs Local-First.
+   - Challenge screen count. Propose the minimal, most intuitive flow.
+2. **Step 2 (Design System & Centralized Text)**:
+   - Determine text strategy (`AppLocalizations` FR/EN or `AppStrings`).
+   - Confirm typography tokens and vector iconography.
 3. **Step 3 (Domain & Contracts)**:
    - Write pure Dart entities and abstract repository contracts.
 4. **Step 4 (Data, State & Granular Loading)**:
    - Implement data sources, DTOs, and reactive state notifiers with typed failures and isolated action loading identifiers (`loadingAction`).
-5. **Step 5 (Presentation with 4-State UI & Homothetic Responsiveness)**:
+5. **Step 5 (Presentation with UI Contracts & Homothetic Responsiveness)**:
    - Build UI using `AppButton`, `context.rW()`, `context.rH()`, `context.rSize()`, `context.rSp()`, `FittedBox` title safety, keyboard scroll hygiene, and shimmer loading.
 6. **Step 6 (OS Polish & Verification)**:
    - Verify Edge-to-Edge compliance, zero hardcoded strings, zero emojis, zero shared loading flashes, and run automated tests.

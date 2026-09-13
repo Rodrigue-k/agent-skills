@@ -9,14 +9,17 @@ These skills transform AI assistants from general code generators into **Senior 
 ## 📦 Available Skills
 
 ### 📱 [`senior-mobile-developer`](./skills/senior-mobile-developer/SKILL.md)
-Universal end-to-end senior engineering and product craft doctrine for production mobile applications:
+Universal end-to-end senior engineering and product craft doctrine for production mobile applications, with **Modular & Conditional Project Profiling**:
+- **Project Profiling Matrix**: Intelligent adaptation based on project mode (*Enterprise/International*, *Focused MVP/Monolingual*, *Local-First Standalone*).
 - **Product Strategy & Page Rationalization**: The 4-Hat Mindset, "Page Justification" filter, streamlined navigation architecture (max 3-5 tabs, modal bottom sheets).
 - **World-Class UI/UX Standards**: Strict zero-emoji policy, zero fake AI/marketing badges, non-flat refined gradients/surfaces, thumb-zone ergonomics (>= 48x48dp touch targets).
-- **Native Bilingual i18n (FR/EN)**: Zero hardcoded user strings, strict dual-language parity from Day 0, resilience against text expansion (+30% FR).
+- **Adaptive Centralized Text & i18n**: 
+  - *Multi-language*: Strict dual-language parity (`AppLocalizations` FR/EN).
+  - *Single-language*: Clean centralized constants (`AppStrings`), zero forced translation overhead, guaranteed UI expansion safety (`FittedBox`, `Wrap`).
 - **Homothetic Zero-Overflow Responsive Engine**: System `textScaler` clamping (0.85x - 1.15x), Screen Ratio Engine (`rW`, `rH`, `rSize`, `rSp`, `rPad` clamped 0.68x-1.15x), dynamic title protection (`FittedBox` scaleDown), safe universal primitives (`AppButton`), keyboard avoidance scroll containers.
 - **Granular Action Loading & Button State Isolation**: Elimination of amateur multi-button spinner flashing. Scoped action enums (`loadingAction`), targeted spinner rendering on the tapped button only, graceful non-spinning disabling of sibling actions, and per-item loading tracking in lists.
-- **Domain-Driven Clean Architecture (DDD)**: Feature-First structure, 100% pure Dart `domain/` layer, reactive Inversion of Control ($UI = f(State)$), Zero-Trust client security with compile-time `--dart-define`.
-- **4-State UI Contract & Error Architecture**: Canonical `Loading` (Shimmer/Skeleton), `Data/Success` (Pull-to-refresh), `Empty` (Illustration + CTA), and `Error` (Failure explanation + Retry button) states.
+- **Scalable Clean Architecture (DDD)**: Feature-First structure, 100% pure Dart `domain/` layer, reactive Inversion of Control ($UI = f(State)$), pragmatic layering (no useless pass-through UseCases on simple CRUD), Zero-Trust client security with compile-time `--dart-define`.
+- **4-State UI Contract & Error Architecture**: Canonical `Loading` (Shimmer/Skeleton), `Data/Success` (Pull-to-refresh), `Empty` (Illustration + CTA), and `Error` (Failure explanation + Retry button) states on async views.
 - **OS Polish & Diagnostics**: True Edge-to-Edge system bar overlays, native OS splash screens (`flutter_native_splash`), centralized declarative routing (`GoRouter`), and structured `AppLogger`.
 - **Automated Verification Matrix**: Unit tests, state notifier/bloc tests, and widget contract tests (`mocktail`).
 
