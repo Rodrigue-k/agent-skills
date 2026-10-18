@@ -5,7 +5,7 @@ description: >-
   Features Modular & Conditional Project Modes (Enterprise/Scale vs MVP/Monolingual vs Local-First).
   Enforces Product Discovery & Page Rationalization, World-Class UI/UX Standards (Zero-Emoji, Zero Fake-AI, Thumb-Zone ergonomics),
   Adaptive i18n & Centralized Text Architecture, Homothetic Zero-Overflow Responsive Engine (Screen Ratio Engine),
-  Granular Button & Action Loading Isolation, Scalable Domain-Driven Clean Architecture (DDD), Exhaustive 4-State UI Contracts,
+  Granular Button & Action Loading Isolation, Technology-Agnostic Feature-First Clean Architecture (dependency rule, role-based naming, typed Result/Failure), Exhaustive 4-State UI Contracts,
   End-to-End Testing Matrix (Unit, State, Golden/Visual, Integration/E2E, Chaos/Offline, Security & a11y),
   App Lifecycle & Background Sync, Edge-to-Edge OS Polish, Zero-Trust Client Security, and Observability/CI-CD.
   Apply across ANY mobile application project to build with senior-level craft and product thinking from day 0.
@@ -14,6 +14,15 @@ description: >-
 # 📱 Universal Senior Mobile Application Engineering & Product Doctrine
 
 This doctrine establishes the **Complete Senior Lifecycle Framework** for conceiving, architecting, testing, and delivering world-class mobile applications. It empowers developers and AI agents to operate not merely as code generators, but as **Senior Product Engineers and Principal Mobile Architects** capable of tailoring standards intelligently to the specific scope, risk profile, and maturity of any project.
+
+---
+
+## Developer-Owned Device Session
+
+- The user owns the Android Studio/Xcode run/debug session and physical-device visual review. By default, edit source and run appropriate local formatting, static analysis, and isolated automated tests; leave the running app and its debugger connection alone.
+- A connected phone, a screenshot from it, or a request to fix UI does NOT authorize installing, launching, stopping, restarting, attaching to, or replacing the application. Do not run `flutter run`, `flutter install`, `flutter attach`, device install/launch/force-stop commands, or reset app data without an explicit user request covering that action.
+- Preserve the user's hot-reload workflow. Let the user perform hot reload and report the visual result. Do not trigger hot reload/restart yourself unless requested. If a native or startup change requires hot restart or rebuild, explain why and let the user perform it; do not launch a second session to validate it.
+- Report code/test results separately from user-confirmed visual results. Never claim physical-device rendering was verified merely because compilation or widget tests passed.
 
 ---
 
@@ -317,48 +326,143 @@ For every screen requested or planned, ask:
 
 ---
 
-## 6. 🏛️ Phase 6: Scalable Domain-Driven Clean Architecture
+## 6. 🏛️ Phase 6: Clean Architecture Doctrine (Feature-First, Technology-Agnostic)
 
-Adapt architecture depth to the project's scale:
+Clean Architecture exists for ONE reason: **business rules must not know which framework, database, cloud or SDK is used.** Tomorrow the backend can move from Firebase to Supabase, REST, GraphQL or a local DB — only the outermost adapters and the composition root may change.
+
+### 6.1 The Dependency Rule (absolute)
+
+```
+presentation ──► domain ◄── data
+        ▲                     ▲
+        └── app (composition root / DI) ──┘
+```
+
+- `domain` depends on **nothing** (pure Dart; `package:meta` / `package:collection` allowed).
+- `data` depends on `domain` (implements its contracts) and on SDKs.
+- `presentation` depends on `domain` only. It NEVER imports `data/` nor any backend SDK.
+- `app/` (composition root) is the ONLY place that knows which concrete implementation fulfills which contract.
+- A feature never imports another feature's `data/` or `presentation/` internals. Cross-feature needs go through the other feature's `domain` contracts (or the shared kernel in `core/`).
+
+### 6.2 Technology-Agnostic Naming (zero vendor names)
+
+Names describe the **role**, never the **technology**. A vendor name in a file, class, folder, method or field is an architecture leak.
+
+| ❌ Leaky (forbidden) | ✅ Role-based |
+| :--- | :--- |
+| `firebase_auth_service.dart`, `FirebaseAuthService` | `auth_remote_data_source.dart`, `AuthRemoteDataSource` |
+| `supabase_post_service.dart` | `listing_remote_data_source.dart` |
+| `listing_model.dart` + `ListingModel.fromFirestore()` | `listing_dto.dart` + `ListingDto.fromMap()` |
+| `hive_favorites.dart`, `SharedPrefsFavorites` | `favorites_local_data_source.dart` |
+| `oci_image_storage.dart`, `S3Uploader` | `media_remote_data_source.dart` |
+| `dio_client.dart` | `api_client.dart` |
+| `DocumentSnapshot? lastDoc` in a controller | `ListingCursor? cursor` (domain value object) |
+| `Timestamp createdAt` in an entity | `DateTime createdAt` |
+
+Rules:
+- SDK types (`DocumentSnapshot`, `Timestamp`, an auth SDK `User`, `XFile`, `PostgrestException`, `DioException`…) **never cross** the data layer boundary. They are converted inside the data source / DTO.
+- Pagination cursors, ids, errors and streams exposed by repositories are domain types.
+- The vendor name appears **only** in `import` lines of data-source implementation files and in the composition root.
+- Product concepts are not technology: `signInWithGoogle()` is fine (Google is an identity *provider* the user sees); `firebaseSignIn()` is not.
+
+### 6.3 Canonical Feature Layout
 
 ```
 lib/
-├── core/
-│   ├── config/              # Environment config & compile-time variables
-│   ├── di/                  # Dependency Injection container & root providers
-│   ├── errors/              # Universal Failure & Exception models
-│   ├── localization/        # AppLocalizations (or AppStrings)
-│   ├── network/             # HTTP client, interceptors (if remote backend)
-│   ├── theme/               # Semantic design tokens, typography (AppTypography)
-│   ├── utils/               # Structured AppLogger, formatters, extensions
-│   └── widgets/             # Core reusable UI primitives (AppButton, AppTextField, Shimmer)
-└── features/
-    └── [feature_name]/
-        ├── data/
-        │   ├── datasources/ # Remote API / Local SQLite/Hive/Isar
-        │   ├── dto/         # Data Transfer Objects (serialization)
-        │   └── repositories/# Concrete repository implementations
+├── main.dart                         # bootstrap() only
+└── src/
+    ├── app/                          # composition root
+    │   ├── bootstrap.dart            # SDK init, error handlers, ProviderScope
+    │   ├── app.dart                  # MaterialApp.router
+    │   ├── di/                       # binds contracts → implementations (ONLY place)
+    │   └── router/                   # routes, guards, shell (bottom nav)
+    ├── core/                         # shared kernel, feature-agnostic
+    │   ├── error/                    # Failure (sealed), Result<T>, DataException
+    │   ├── logging/                  # AppLogger
+    │   ├── l10n/                     # AppStrings
+    │   ├── theme/                    # tokens: colors, typography, spacing, radii, shadows
+    │   ├── responsive/               # context.rW / rH / rSp
+    │   ├── formatting/               # price/date formatters (presentation-side)
+    │   └── widgets/                  # AppButton, AppNetworkImage, Shimmer, StateViews
+    └── features/<feature>/
         ├── domain/
-        │   ├── entities/    # Pure Dart business objects (immutable, ZERO serialization)
-        │   ├── repositories/# Abstract repository contracts (interface I[Feature]Repository)
-        │   └── usecases/    # Business use cases (required for Enterprise, optional for simple CRUD)
+        │   ├── entities/             # immutable, pure, enums for closed sets
+        │   ├── value_objects/        # ListingCursor, PhoneNumber, ...
+        │   ├── repositories/         # abstract contracts: <Name>Repository
+        │   └── usecases/             # ONLY when orchestration/business rules exist
+        ├── data/
+        │   ├── dtos/                 # <Name>Dto: fromMap/toMap + toEntity/fromEntity
+        │   ├── datasources/          # <Name>RemoteDataSource / <Name>LocalDataSource (abstract)
+        │   │                         # + <Name>RemoteDataSourceImpl (the ONLY SDK-aware code)
+        │   └── repositories/         # <Name>RepositoryImpl: calls sources, maps errors → Failure
         └── presentation/
-            ├── providers/   # State controllers (AsyncNotifiers, Blocs, Cubits)
-            ├── screens/     # Top-level screen widgets (Pure UI renderers)
-            └── widgets/     # Feature-specific sub-components
+            ├── controllers/          # Notifiers + immutable UI state
+            ├── screens/              # route-level widgets (pure renderers)
+            └── widgets/              # feature-specific components
 ```
 
-### 💎 The Domain Purity Rule:
-- The `domain/` layer must be **100% pure Dart**. It MUST NEVER import `package:flutter`, `dart:io`, or database drivers.
+### 6.4 File & Symbol Naming Conventions
 
-### ⚡ Pragmatic Clean Architecture vs Over-Engineering:
-- **Enterprise / Scale**: Full layers with explicit UseCases for complex business orchestrations.
-- **Focused MVP**: Pragmatic Clean Architecture (Entities + Abstract Repositories + Notifiers). Do NOT create pass-through UseCases that do nothing except forward a single call to the repository without business logic.
+- Files `snake_case`, one public type per file, file name = type name (`listing_repository.dart` → `ListingRepository`).
+- Suffixes by role: `Repository`, `RepositoryImpl`, `RemoteDataSource`, `LocalDataSource`, `Dto`, use case = verb phrase (`PublishListing`), `Controller` (state holder), `State`, `Screen`, `Sheet`, `Dialog`, `Tile`, `Card`.
+- Entities carry no suffix (`Listing`, not `ListingEntity` / `ListingModel`).
+- No dumping grounds: `utils.dart`, `helpers.dart`, `constants.dart`, `common/`, `misc/` are forbidden. Name by purpose (`price_formatter.dart`, `phone_number.dart`).
+- Booleans read as questions (`isRented`, `hasMore`); methods are verbs (`fetchPage`, `publish`, `markAsRented`).
 
-### 🔒 Zero-Trust Security (When Connecting to Remote Services):
-- **Never store sensitive secrets in the app binary**: Admin keys, master database passwords, and service role keys must only live on the server or Edge functions.
-- Inject public publishable variables at compile time:
-  `flutter build apk --dart-define=API_BASE_URL=https://api.domain.com --dart-define=PUBLIC_KEY=pk_live_...`
+### 6.5 Errors Across Layers
+
+```
+SDK exception ─(data source)─► DataException (neutral) ─(repository)─► Failure (sealed) ─(controller)─► UI text via AppStrings
+```
+
+- Data sources translate SDK errors into neutral `DataException`s (`network`, `permissionDenied`, `notFound`, `unauthenticated`, `unknown`).
+- Repositories return `Result<T>`; they never throw.
+- Controllers expose state; widgets map `Failure` → text. `e.toString()` never reaches the user.
+
+### 6.6 Dependency Injection & State
+
+- **Contract providers throw by default** and are bound in the composition root, so presentation never imports `data/`:
+  ```dart
+  // features/listings/presentation/providers/listings_dependencies.dart
+  final listingRepositoryProvider = Provider<ListingRepository>(
+    (ref) => throw UnimplementedError('Bound in app/di'),
+  );
+
+  // app/di/dependency_overrides.dart — the ONLY file importing *Impl classes
+  List<Override> dependencyOverrides() => [
+    listingRepositoryProvider.overrideWith(
+      (ref) => ListingRepositoryImpl(ListingRemoteDataSourceImpl(store)),
+    ),
+  ];
+
+  // bootstrap.dart
+  runApp(ProviderScope(overrides: dependencyOverrides(), child: const App()));
+  ```
+- **Feature public port**: when other features need a feature (session, media upload), expose ONLY its contracts in `features/<f>/<f>_providers.dart` (e.g. `auth_providers.dart` with `authRepositoryProvider`, `currentUserProvider`). Other features import that file and `<f>/domain`, never `<f>/data` or `<f>/presentation`.
+- **Cross-feature screens** are reached by route (`context.push<bool>(AppRoutes.signIn)`), never by importing the other feature's widget. The router (in `app/`) composes screens.
+- **Device capabilities** (dialer, WhatsApp, share sheet, photo picker, camera) sit behind `core/` contracts (`ContactLauncher`, `PhotoPicker`) with `*Impl` bound in `app/di`, so widgets stay testable.
+- Tests override the contract providers with fakes — no SDK in tests above the data layer.
+- One controller per screen concern. UI state is immutable with `copyWith`; nullable fields use `T? Function()?` parameters in `copyWith` so they can be cleared.
+- **Stale responses**: controllers that reload on user input (search, filters) keep a generation counter and drop responses of older requests; always check `ref.mounted` after an `await`.
+
+### 6.7 Use Cases — Pragmatism
+
+- **Create a use case** when it orchestrates several repositories/services or enforces a business rule (e.g. `PublishListing`: validate → compress → upload media → write listing → rollback media on failure).
+- **Do not create** pass-through use cases (`GetListings` that only calls `repository.fetch()`). Controllers may call repositories directly.
+
+### 6.8 Domain Purity Checklist (review gate)
+
+- [ ] No `package:flutter`, no SDK, no `dart:io` in `domain/`.
+- [ ] No formatting (currency, dates), colors, icons or localized strings in entities.
+- [ ] Closed sets are enums with an explicit, stable wire `key` mapped in DTOs (never persist `enum.name` blindly).
+- [ ] Invariants enforced by factories / value objects where relevant.
+- [ ] `grep -riE "firebase|firestore|supabase|hive|oci|dio" lib/src/**/domain lib/src/**/presentation` returns nothing.
+
+### 🔒 Zero-Trust Security (When Connecting to Remote Services)
+- **Never store sensitive secrets in the app binary**: admin keys, service-role keys, cloud storage credentials live only on servers / edge functions.
+- **Never commit `.env` files with secrets** — not even "test" ones. If it happened, rotate the key immediately (git history is forever).
+- Inject public, publishable variables at compile time:
+  `flutter build apk --dart-define=MEDIA_API_URL=https://media.domain.com`
 
 ---
 
@@ -418,8 +522,8 @@ graph TD
 #### 2. ⚡ Tier 2: State Controller & Notifier Tests (Mandatory for ALL Projects)
 - **Scope**: State transitions in Riverpod `AsyncNotifier`, Bloc `Cubit`, or ViewModel.
 - **Verification**:
-  - Initial $ightarrow$ Loading $ightarrow$ Success (with payload).
-  - Initial $ightarrow$ Loading $ightarrow$ Failure (`AppFailure` mapped).
+  - Initial → Loading → Success (with payload).
+  - Initial → Loading → Failure (`AppFailure` mapped).
   - **Granular Loading Isolation**: Verify only the specific `loadingAction` changes during multi-button flows.
 - **Tools**: `mocktail`, `flutter_test`.
 
@@ -433,7 +537,7 @@ graph TD
 - **Golden Tests (Enterprise/Scale)**: Pixel-perfect snapshot regression tests verifying Light/Dark mode appearance.
 
 #### 4. 🔄 Tier 4: End-to-End (E2E) & Critical Flow Tests
-- **Scope**: Automated navigation through entire business user journeys (e.g., *Onboarding $ightarrow$ Sign In $ightarrow$ Search Job $ightarrow$ Submit Application $ightarrow$ Confirmation*).
+- **Scope**: Automated navigation through entire business user journeys (e.g., *Onboarding → Sign In → Search Job → Submit Application → Confirmation*).
 - **Route & Guard Verification**: Verify unauthenticated users hitting `/profile` are redirected to `/login`, and deep links `/jobs/:id` navigate to the correct detail view.
 - **Tools**: `integration_test`, `Patrol`, or `Maestro`.
 - *Condition*: Required for Enterprise / Production apps; optional for early MVPs.
@@ -446,7 +550,7 @@ graph TD
   - **Offline-First Mode**: Verifying cached data displays immediately when disconnected from internet.
 
 #### 6. 🏎️ Tier 6: Performance, Frame Jank & Memory Leak Profiling
-- **Target**: Continuous 60fps / 120fps scrolling with zero frame drops (render time $< 16\,	ext{ms}$ per frame).
+- **Target**: Continuous 60fps / 120fps scrolling with zero frame drops (render time < 16 ms per frame).
 - **Resource Disposal Verification**: Automated test verifying all `StreamSubscription`, `TextEditingController`, `AnimationController`, and `Timer` instances are cancelled when navigating away.
 - **Binary Size Budget**: Monitoring APK/AAB and IPA binary size to prevent asset bloat.
 
@@ -459,8 +563,8 @@ graph TD
 #### 8. ♿ Tier 8: Accessibility (a11y) & Screen Reader Compliance
 - **Scope**:
   - Verify every interactive button has a clear semantic label for TalkBack / VoiceOver.
-  - Minimum touch target verification ($\ge 48 	imes 48\,	ext{dp}$).
-  - Contrast ratio verification ($\ge 4.5:1$ for normal text, $\ge 3.0:1$ for large headings).
+  - Minimum touch target verification (≥ 48×48 dp).
+  - Contrast ratio verification (≥ 4.5:1 for normal text, ≥ 3.0:1 for large headings).
 
 ---
 
@@ -492,18 +596,11 @@ Enterprise-grade mobile apps handle OS interruptions gracefully:
 ## 10. 🚀 Phase 10: OS-Native Polish, Routing & Production Deployment
 
 1. **True Edge-to-Edge System Bars**:
-   - Transparent navigation and status bars with adaptive icon brightness:
-   ```dart
-   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-   SystemChrome.setSystemUIOverlayStyle(
-     const SystemUiOverlayStyle(
-       statusBarColor: Colors.transparent,
-       statusBarIconBrightness: Brightness.dark,
-       systemNavigationBarColor: Colors.transparent,
-       systemNavigationBarIconBrightness: Brightness.dark,
-     ),
-   );
-   ```
+   - Treat the status bar and bottom system navigation/gesture area as part of the screen design from day 0: no unintended gray/black strips, contrast scrims, dividers, or mismatched backgrounds.
+   - In Flutter, enable `SystemUiMode.edgeToEdge` at startup and define a shared `SystemUiOverlayStyle` derived from the actual background/theme. Use transparent status/navigation/divider colors and appropriate status/navigation icon brightness; account for iOS `statusBarBrightness` too.
+   - Apply the shared style through a root `AnnotatedRegion<SystemUiOverlayStyle>` around the routed child, including routes WITHOUT an AppBar. Reuse it in `AppBarTheme.systemOverlayStyle`; a startup call or AppBar-only configuration is insufficient. Allow route-level overrides for photos or contrasting headers.
+   - On supported Android versions, explicitly set `systemStatusBarContrastEnforced: false` and `systemNavigationBarContrastEnforced: false` when the app provides readable contrast, avoiding OS-added scrims. Respect Android API/target-SDK limitations and vendor behavior; do not promise identical results everywhere.
+   - Paint the intended background behind both system areas, preserve safe-area insets for controls, and keep floating navigation clear of the gesture indicator. Check light/dark themes, screens with/without AppBars, sheets, gesture/three-button navigation, and keyboard transitions as relevant. Automated widget tests cannot prove native system-bar rendering; physical-device visual confirmation belongs to the user unless explicitly delegated.
 
 2. **Native OS Splash Screen Protocol**:
    - Splash screens belong to the native OS window manager (`flutter_native_splash` configuring Android 12+ Splash API and iOS `LaunchScreen.storyboard`).
@@ -511,6 +608,70 @@ Enterprise-grade mobile apps handle OS interruptions gracefully:
 
 3. **Declarative Routing & Deep Linking**:
    - Centralized declarative router (`GoRouter`) with authentication guards (`redirect` callback) and parameterized deep link routes (`/items/:id`).
+
+---
+
+## 11. 📦 Phase 11: Dependency Hygiene, Error Contracts & Delivery Discipline
+
+### 1. Dependency Management (Non-Negotiable)
+- **Never hand-edit version constraints in `pubspec.yaml`.** Use exclusively:
+  - `flutter pub add <pkg>` / `flutter pub add dev:<pkg>`
+  - `flutter pub remove <pkg>`
+  - `flutter pub upgrade --major-versions` (deliberate, reviewed)
+- Run `flutter pub outdated` at the start of every milestone; never pin a package to an old major "to make it compile" without a written reason.
+- One responsibility = one package. Ban overlapping libraries (e.g. `hive` + `get_storage` + `sqflite` + `shared_preferences` for the same need).
+- Before coding against a package, check its CURRENT major API (changelog) — never assume an older API from memory (e.g. `google_sign_in` 7.x, Riverpod 3.x, go_router).
+
+### 2. Domain Purity — Extended
+- Entities contain **no presentation logic**: no price formatting, no `Color`, no `IconData`, no localized strings. Formatting belongs to `presentation/` (extensions or presenters).
+- Domain must not import `package:flutter/*` (not even `foundation.dart` for `@immutable` — use `package:meta` or freezed).
+- Enums for closed sets (`ListingType`, `ListingStatus`), never raw strings travelling through the app.
+
+### 3. Typed Error Contract
+- Repositories NEVER throw to the UI. They return a sealed `Result<T>` (`Success` / `Err(Failure)`).
+- `Failure` is a sealed hierarchy (`NetworkFailure`, `PermissionFailure`, `NotFoundFailure`, `ValidationFailure`, `UnknownFailure`) mapped once in the data layer from SDK exceptions.
+- UI maps `Failure` → human message through `AppStrings`, never `e.toString()`.
+
+### 4. Remote Lists & Data Cost
+- Every remote list is **cursor-paginated** (page size 20) with infinite scroll + pull-to-refresh.
+- Grid/list views load **thumbnails**, detail views load full images.
+- Firestore: every compound query has its index declared in `firestore.indexes.json`; security rules validate field types/ownership and are versioned in the repo.
+
+### 5. Media Pipeline (User-Generated Images)
+- **Client-side compression is mandatory** before any upload (WebP, ~1080px short side q≈78 for full, ~420px q≈70 for thumbnail, EXIF/GPS stripped). Store width/height for aspect ratios.
+- **Zero cloud credentials in the binary.** Pick the upload channel by what the storage can enforce:
+  - **Signed URLs** (S3 presigned POST with `content-length-range`, GCS signed policy) only when the provider can cap size and content type in the signature.
+  - **Validated proxied upload** otherwise (e.g. OCI PARs cannot limit size or type): a small API verifies the ID token, checks the real type from **magic bytes** (never the header), caps the size, rate-limits per user, and writes under a per-user prefix (`listings/{uid}/{listingId}/…`) so ownership is enforced by path.
+- Per-file upload progress, and **rollback** (delete uploaded files) on ANY later failure — including a partial upload.
+- A server-side job deletes orphaned media and expires stale items; immutable object names + `Cache-Control: public, max-age=31536000, immutable`.
+- Android: use the system **Photo Picker** (`image_picker`), never request `READ_MEDIA_*` / storage permissions (Play policy).
+
+### 6. Marketplace / UGC Hygiene
+- Every user-published item has: owner id, status lifecycle (`active → rented/sold → expired → removed`), `expiresAt` with renewal, and a **Report** action.
+- Browsing never requires an account; authentication is requested only at the moment of a write action (publish, report).
+
+### 7. Legacy Migration Protocol
+- Never refactor a legacy codebase in place file-by-file. **Build the new structure alongside** (`lib/src/`), switch the entry point once the first vertical slice works, then **delete the legacy code in one dedicated commit**.
+- Legacy screens are used as functional reference only — no copy-paste of legacy state management.
+
+### 8. Design Reference Gate
+- Before building any new screen, collect 2–3 references (Dribbble, Pinterest, Mobbin) and validate the direction with the product owner. Then translate them into the existing design tokens — never introduce ad-hoc colors or font sizes in a screen.
+
+### 9. Commit & Quality Discipline
+- Conventional Commits (`feat(scope):`, `fix:`, `refactor:`, `chore(deps):`, `test:`), **one commit per coherent brick**.
+- Gate before every commit: `dart format .` → `flutter analyze` (0 issues) → `flutter test` (green).
+- Generated code (`*.g.dart`, `*.freezed.dart`) is regenerated with `dart run build_runner build -d`, never edited by hand.
+- **Code generation is optional**: if the latest generator conflicts with the SDK's `analyzer`, prefer hand-written immutable classes (`@immutable`, `==`, `copyWith`) over pinning prerelease generators.
+- No `print`/`debugPrint` in committed code — use `AppLogger`.
+- Never add AI attribution trailers (`Co-Authored-By`) unless the owner asks for them.
+
+### 10. Known Pitfalls (verified on Flutter 3.44 / Riverpod 3 / go_router 18)
+- Riverpod 3: `Override` is exported from `package:flutter_riverpod/misc.dart`; family notifiers receive their argument in the constructor; failing providers **auto-retry by default** — pass `retry: (_, _) => null` when the error is a domain `Failure` the UI must show.
+- `(f1, f2).wait` throws `ParallelWaitError`, hiding the typed exception: the repository `guard()` must unwrap it (or use `Future.wait`).
+- `google_fonts` fetches at runtime: add `test/flutter_test_config.dart` setting `GoogleFonts.config.allowRuntimeFetching = false`; before release, bundle the font files in assets.
+- **Android Core Library Desugaring & MultiDex**: Packages relying on modern Java APIs or notifications (`flutter_local_notifications`, Firebase) fail Android builds at `checkDebugAarMetadata` unless desugaring is enabled. Always configure `compileOptions { isCoreLibraryDesugaringEnabled = true }`, add `multiDexEnabled = true` in `defaultConfig`, and declare `coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")` under `dependencies` in `android/app/build.gradle.kts`.
+- Tests that read a `Notifier` whose `build()` schedules work must read the provider **before** awaiting.
+- Firestore: an inequality filter forces ordering by that field first — design cursors that carry every ordered field (`price`, `createdAt`, `id`); expired items need a server job (or a client-side visibility filter), not an extra range filter.
 
 ---
 
@@ -534,3 +695,5 @@ When prompted to create or evolve a mobile feature, the AI MUST follow this exac
    - Write Unit tests (Domain & DTOs), State Notifier tests, and Widget contract tests (testing 320dp, 390dp, 448dp + 1.4x text scaling).
 7. **Step 7 (OS Polish & Verification)**:
    - Verify Edge-to-Edge compliance, zero hardcoded strings, zero emojis, zero shared loading flashes, lifecycle cleanup, and run automated test suite.
+8. **Step 8 (Commit Gate)**:
+   - `dart format .`, `flutter analyze` (0 issues), `flutter test` green, then one Conventional Commit per coherent brick (Phase 11).
